@@ -13,15 +13,76 @@ pub(crate) fn unifiable(t0: &Term, t1: &Term) -> bool {
 }
 
 pub(crate) fn mgu(t0: &Term, t1: &Term) -> Option<Subst> {
-    todo!()
+    // dummy implementation as of now as my terms are linear
+    match matches(t0, t1) {
+        Some(sigma) => Some(sigma),
+        None => matches(t1, t0),
+    }
 }
 
-pub(crate) fn matches(t0: &Term, t1: &Term) -> Option<Subst> {
-    todo!()
+pub(crate) fn matches(t00: &Term, t11: &Term) -> Option<Subst> {
+    // easy because all my terms are linear here so uninteresting
+    fn matches_aux(t0: &Term, t1: &Term, mut sigma: Subst) -> Option<Subst> {
+        match t0 {
+        Term::F(t) => {
+            match t1 {
+                Term::F(s) => matches(t, s),
+                _ => None,
+            }
+        },
+        Term::G(t) => {
+            match t1 {
+                Term::G(s) => matches(t, s),
+                _ => None,
+            }
+        },
+        Term::H(t) => {
+            match t1 {
+                Term::H(s) => matches(t, s),
+                _ => None,
+            }
+        },
+        Term::A => {
+            match t1 {
+                Term::A => Some(sigma),
+                _ => None,
+            }
+        },
+        Term::B => {
+            match t1 {
+                Term::B => Some(sigma),
+                _ => None,
+            }
+        },
+        Term::C => {
+            match t1 {
+                Term::C => Some(sigma),
+                _ => None,
+            }
+        },
+        Term::Var(x) => {
+            if sigma.contains_key(t0) {
+                let v = sigma.get(t0)?;
+                if v == t1 {
+                    Some(sigma)
+                } else {
+                    None
+                }
+            } else {
+                sigma.insert(t0.clone(), t1.clone());
+                Some(sigma)
+            }
+        }
+    }
+    } 
+    matches_aux(t00, t11, HashMap::new())
 }
 
 pub(crate) fn apply(sigma: &Subst, t: &Term) -> Term {
-    todo!()
+    match (*t) {
+        Term::Var(x) => todo!(),
+        _ => panic!("The application is not possible!")
+    }
 }
 
 pub(crate) fn apply_vec(sigma: &Subst, v: &Vec<Term>) -> Vec<Term> {
