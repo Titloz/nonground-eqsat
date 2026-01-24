@@ -4,7 +4,7 @@ use std::collections::{HashMap, VecDeque};
 use crate::language::Term;
 use crate::class::Class;
 
-pub(crate) type Subst = HashMap<Term,Term>; // invariant to maintain : I only add variables ...
+pub(crate) type Subst = HashMap<usize,Term>; 
 
 /*pub(crate) fn unifiable(t0: &Term, t1: &Term) -> bool {
     match mgu(&t0, &t1) {
@@ -61,16 +61,16 @@ pub(crate) fn matches(t00: &Term, t11: &Term) -> Option<Subst> {
                 _ => None,
             }
         },
-        Term::Var(_) => {
-            if sigma.contains_key(t0) {
-                let v = sigma.get(t0)?;
+        Term::Var(x) => {
+            if sigma.contains_key(x) {
+                let v = sigma.get(x)?;
                 if v == t1 {
                     Some(sigma)
                 } else {
                     None
                 }
             } else {
-                sigma.insert(t0.clone(), t1.clone());
+                sigma.insert(*x, t1.clone());
                 Some(sigma)
             }
         }
@@ -81,8 +81,8 @@ pub(crate) fn matches(t00: &Term, t11: &Term) -> Option<Subst> {
 
 pub(crate) fn apply(sigma: &Subst, t: &Term) -> Term {
     match t {
-        Term::Var(_) => {
-            match sigma.get(t).cloned() {
+        Term::Var(x) => {
+            match sigma.get(x).cloned() {
                 None => t.clone(),
                 Some(s) => s,
             }

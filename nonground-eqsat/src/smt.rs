@@ -7,7 +7,7 @@ pub(crate) fn sat(c: &Class) -> bool {
 
 type LA = u8; // to change obviously
 
-pub(crate) fn build_lAC(v: &Vec<Term>) -> LA {
+pub(crate) fn build_lac(v: &Vec<Term>) -> LA {
     todo!("buildLAC")
 }
 

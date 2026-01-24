@@ -1,6 +1,6 @@
 use crate::class::Class;
 use crate::util::{matches, Subst, apply};
-use crate::smt::{build_lAC, la_implication_test};
+use crate::smt::{build_lac, la_implication_test};
 
 pub(crate) fn check_subsumption(c0: &Class, c1: &Class) -> bool {
     if (&c0).sepvars().is_empty() {
@@ -11,9 +11,16 @@ pub(crate) fn check_subsumption(c0: &Class, c1: &Class) -> bool {
                 match matches(&t0, &t1) {
                     None => continue,
                     Some(sigma) => {
-                        // weird conditional here : TODO
                         // sigma -= {x->t | x-> is in sigma and x is a free variable} 
-                        if check_subsumption_fv(c0, c1, &sigma) {
+                        let sv = (&c0).sepvars();
+                        let mut new_sigma : Subst = Subst::new();
+                        for x in sv {
+                            match sigma.get(&x) {
+                                None => continue,
+                                Some(t) => {new_sigma.insert(x, t.clone());},
+                            }
+                        }
+                        if check_subsumption_fv(c0, c1, &new_sigma) {
                             return true;
                         }
                     },
@@ -38,8 +45,8 @@ fn check_subsumption_fv(c0: &Class, c1: &Class, sigma: &Subst) -> bool { // sigm
                         let tdelta = apply(&delta, &tsigma);
                         v.push(tdelta);
                     }
-                    let lac0 = build_lAC(&v);
-                    let lac1 = build_lAC(&c1.constraints);
+                    let lac0 = build_lac(&v);
+                    let lac1 = build_lac(&c1.constraints);
                     if la_implication_test(lac0, lac1) {
                         result = true;
                         break;

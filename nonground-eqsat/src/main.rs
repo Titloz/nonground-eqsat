@@ -16,7 +16,6 @@ use crate::merge::merge;
 use crate::deduction::deduct;
 
 fn nongroundcc(e: VecDeque<Equality>) {
-    // the data structures here are probably to change
     let mut us : VecDeque<Class> = VecDeque::new();
     let mut wo : VecDeque<Class> = VecDeque::new();
     // I also need to keep a PI in memory, this is what I will return
