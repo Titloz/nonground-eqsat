@@ -79,6 +79,19 @@ pub(crate) fn matches(t00: &Term, t11: &Term) -> Option<Subst> {
     matches_aux(t00, t11, HashMap::new())
 }
 
+pub(crate) fn matches_all(t0: &Term, v: &Vec<Term>) -> Vec<Subst> {
+    let mut new_vec : Vec<Subst> = Vec::new();
+    for t1 in v {
+        match matches(t0, t1) {
+            None => continue,
+            Some(sigma) => new_vec.push(sigma),
+        }
+    }
+    new_vec
+} 
+
+
+
 pub(crate) fn apply(sigma: &Subst, t: &Term) -> Term {
     match t {
         Term::Var(x) => {

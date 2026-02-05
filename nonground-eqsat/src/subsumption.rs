@@ -31,20 +31,25 @@ pub(crate) fn check_subsumption(c0: &Class, c1: &Class) -> bool {
     }
 }
 
-fn check_subsumption_fv(c0: &Class, c1: &Class, sigma: &Subst) -> bool { // sigma: &mut Subst
+fn check_subsumption_fv(c0: &Class, c1: &Class, sigma: &Subst) -> bool { 
+    // checks if c0 subsumes c1
     for t1 in c1.terms.clone() {
         let mut result: bool = false;
         for t0 in c0.terms.clone() {
             let s = apply(sigma, &t0);
             match matches(&s, &t1) {
                 None => continue,
-                Some(delta) => {
+                Some(tau) => {
                     let mut v = Vec::new();
                     for term in c0.constraints.clone() {
                         let tsigma = apply(sigma, &term);
-                        let tdelta = apply(&delta, &tsigma);
-                        v.push(tdelta);
+                        let ttau = apply(&tau, &tsigma);
+                        v.push(ttau);
                     }
+                    // we test if the constraints are verified
+                    // i might want to replace it with an explicit representation of M
+                    // according to def 20, what I need to test is :
+                    // forall delta. (delta(c1.constraints) => exists delta'. delta'(delta(tau(sigma(c0.constraints)))))
                     let lac0 = build_lac(&v);
                     let lac1 = build_lac(&c1.constraints);
                     if la_implication_test(lac0, lac1) {
