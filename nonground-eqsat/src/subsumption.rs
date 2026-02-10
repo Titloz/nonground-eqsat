@@ -1,10 +1,11 @@
 use crate::class::Class;
 use crate::util::{matches, Subst, apply};
-use crate::smt::{build_lac, la_implication_test};
+use crate::smt::{implication_test};
+use crate::language::Term;
 
-pub(crate) fn check_subsumption(c0: &Class, c1: &Class) -> bool {
+pub(crate) fn check_subsumption(m: &Vec<Term>, c0: &Class, c1: &Class) -> bool {
     if (&c0).sepvars().is_empty() {
-        check_subsumption_fv(c0, c1, &Subst::new()) //, empty_subst
+        check_subsumption_fv(m, c0, c1, &Subst::new()) //, empty_subst
     } else {
         for t0 in c0.terms.clone() {
             for t1 in c1.terms.clone() {
@@ -20,7 +21,7 @@ pub(crate) fn check_subsumption(c0: &Class, c1: &Class) -> bool {
                                 Some(t) => {new_sigma.insert(x, t.clone());},
                             }
                         }
-                        if check_subsumption_fv(c0, c1, &new_sigma) {
+                        if check_subsumption_fv(m, c0, c1, &new_sigma) {
                             return true;
                         }
                     },
@@ -31,7 +32,7 @@ pub(crate) fn check_subsumption(c0: &Class, c1: &Class) -> bool {
     }
 }
 
-fn check_subsumption_fv(c0: &Class, c1: &Class, sigma: &Subst) -> bool { 
+fn check_subsumption_fv(m: &Vec<Term>, c0: &Class, c1: &Class, sigma: &Subst) -> bool { 
     // checks if c0 subsumes c1
     for t1 in c1.terms.clone() {
         let mut result: bool = false;
@@ -46,13 +47,7 @@ fn check_subsumption_fv(c0: &Class, c1: &Class, sigma: &Subst) -> bool {
                         let ttau = apply(&tau, &tsigma);
                         v.push(ttau);
                     }
-                    // we test if the constraints are verified
-                    // i might want to replace it with an explicit representation of M
-                    // according to def 20, what I need to test is :
-                    // forall delta. (delta(c1.constraints) => exists delta'. delta'(delta(tau(sigma(c0.constraints)))))
-                    let lac0 = build_lac(&v);
-                    let lac1 = build_lac(&c1.constraints);
-                    if la_implication_test(lac0, lac1) {
+                    if implication_test(&(c0.constraints), &(&c1.constraints), m) {
                         result = true;
                         break;
                         // does break have the correct semantics here?

@@ -83,6 +83,10 @@ impl Term {
         traverse(self, &mut set);
         set
     }
+
+    pub(crate) fn is_ground(&self) -> bool {
+        self.get_vars().is_empty()
+    }
 }
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]

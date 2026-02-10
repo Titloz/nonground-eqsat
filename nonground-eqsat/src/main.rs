@@ -15,7 +15,7 @@ use crate::class::Class;
 use crate::merge::merge;
 use crate::deduction::deduct;
 
-fn nongroundcc(e: VecDeque<Equality>) {
+fn nongroundcc(e: VecDeque<Equality>, m: &Vec<Term>) {
     let mut us : VecDeque<Class> = VecDeque::new();
     let mut wo : VecDeque<Class> = VecDeque::new();
     // I also need to keep a PI in memory, this is what I will return
@@ -59,7 +59,7 @@ fn nongroundcc(e: VecDeque<Equality>) {
     // main loop
     while !us.is_empty() {
         let c : Class = us.pop_front().expect("");
-        if merge(&mut wo, &mut us, c.clone()) && deduct(&mut wo, &mut us, c.clone()){
+        if merge(m, &mut wo, &mut us, c.clone()) && deduct(m, &mut wo, &mut us, c.clone()){
             wo.push_back(c);
         } 
     }
@@ -68,5 +68,6 @@ fn nongroundcc(e: VecDeque<Equality>) {
 
 fn main() {
     let equalities : VecDeque<Equality> = VecDeque::new(); // get the equalities
-    nongroundcc(equalities);
+    let m : Vec<Term> = Vec::new();
+    nongroundcc(equalities, &m);
 }
