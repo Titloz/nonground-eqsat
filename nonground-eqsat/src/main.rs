@@ -95,7 +95,7 @@ fn main() {
     equalities.push_back(eq0);
     equalities.push_back(eq1);
     */
-
+    /* EXAMPLE 2
     let lhs0 = Term::G(Box::new(Term::Var(0)));
     let rhs0 = Term::A;
     let eq0 = Equality {lhs: lhs0, rhs: rhs0};
@@ -109,6 +109,42 @@ fn main() {
     equalities.push_back(eq0);
     equalities.push_back(eq1);
     equalities.push_back(eq2);
+    */
+    /* EXAMPLE 3
+    let lhs0 = Term::F(Box::new(Term::Var(0)));
+    let rhs0 = Term::G(Box::new(Term::Var(0)));
+    let eq0 = Equality {lhs: lhs0, rhs:rhs0};
+    equalities.push_back(eq0);
+    */
+
+    let lhs0 = Term::F(Box::new(Term::A));
+    let rhs0 = Term::H(Box::new(Term::A));
+    let eq0 = Equality {lhs: lhs0, rhs: rhs0};
+    let lhs1 = Term::G(Box::new(Term::A));
+    let rhs1 = Term::H(Box::new(Term::A));
+    let eq1 = Equality {lhs: lhs1, rhs: rhs1};
+    let lhs2 = Term::F(Box::new(Term::B));
+    let rhs2 = Term::H(Box::new(Term::B));
+    let eq2 = Equality {lhs: lhs2, rhs: rhs2};
+    let lhs3 = Term::G(Box::new(Term::B));
+    let rhs3 = Term::H(Box::new(Term::B));
+    let eq3 = Equality {lhs: lhs3, rhs:rhs3};
+    let lhs4 = Term::F(Box::new(Term::Var(0)));
+    let rhs4 = Term::G(Box::new(Term::Var(0)));
+    let eq4 = Equality {lhs: lhs4, rhs:rhs4};
+    let lhs5 = Term::A;
+    let rhs5 = Term::F(Box::new(Term::A));
+    let eq5 = Equality {lhs: lhs5, rhs: rhs5};
+    let lhs6 = Term::B;
+    let rhs6 = Term::F(Box::new(Term::B));
+    let eq6 = Equality {lhs: lhs6, rhs: rhs6};
+    equalities.push_back(eq0);
+    equalities.push_back(eq1);
+    equalities.push_back(eq2);
+    equalities.push_back(eq3);
+    equalities.push_back(eq4);
+    equalities.push_back(eq5);
+    equalities.push_back(eq6);
 
     let mut m : Vec<Term> = Vec::new(); // get the ground terms
 
@@ -173,7 +209,88 @@ fn main() {
     m.push(ggc);
     m.push(hgc);
     */
+    /* EXAMPLE 2
+    let ga = Term::G(Box::new(Term::A));
+    let ha = Term::H(Box::new(Term::A));
+    let fa = Term::F(Box::new(Term::A));
+    let fha = Term::F(Box::new(ha.clone()));
+    let gha = Term::G(Box::new(ha.clone()));
+    let hha = Term::H(Box::new(ha.clone()));
+    let fga = Term::F(Box::new(ga.clone()));
+    let gga = Term::G(Box::new(ga.clone()));
+    let hga = Term::H(Box::new(ga.clone()));
 
+    let gb = Term::G(Box::new(Term::B));
+    let hb = Term::H(Box::new(Term::B));
+    let fb = Term::F(Box::new(Term::B));
+    let fhb = Term::F(Box::new(hb.clone()));
+    let ghb = Term::G(Box::new(hb.clone()));
+    let hhb = Term::H(Box::new(hb.clone()));
+    let fgb = Term::F(Box::new(gb.clone()));
+    let ggb = Term::G(Box::new(gb.clone()));
+    let hgb = Term::H(Box::new(gb.clone()));
+
+    let gc = Term::G(Box::new(Term::C));
+    let hc = Term::H(Box::new(Term::C));
+    let fc = Term::F(Box::new(Term::C));
+    let fhc = Term::F(Box::new(hc.clone()));
+    let ghc = Term::G(Box::new(hc.clone()));
+    let hhc = Term::H(Box::new(hc.clone()));
+    let fgc = Term::F(Box::new(gc.clone()));
+    let ggc = Term::G(Box::new(gc.clone()));
+    let hgc = Term::H(Box::new(gc.clone()));
+
+    let ffa = Term::F(Box::new(fa.clone()));
+    let gfa = Term::G(Box::new(fa.clone()));
+    let hfa = Term::H(Box::new(fa.clone()));
+    let ffb = Term::F(Box::new(fb.clone()));
+    let gfb = Term::G(Box::new(fb.clone()));
+    let hfb = Term::H(Box::new(fb.clone()));
+    let ffc = Term::F(Box::new(fc.clone()));
+    let gfc = Term::G(Box::new(fc.clone()));
+    let hfc = Term::H(Box::new(fc.clone()));
+
+    m.push(ga);
+    m.push(ha);
+    m.push(fa);
+    m.push(fha);
+    m.push(gha);
+    m.push(hha);
+    m.push(fga);
+    m.push(gga);
+    m.push(hga);
+
+    m.push(gb);
+    m.push(hb);
+    m.push(fb);
+    m.push(fhb);
+    m.push(ghb);
+    m.push(hhb);
+    m.push(fgb);
+    m.push(ggb);
+    m.push(hgb);
+
+    m.push(gc);
+    m.push(hc);
+    m.push(fc);
+    m.push(fhc);
+    m.push(ghc);
+    m.push(hhc);
+    m.push(fgc);
+    m.push(ggc);
+    m.push(hgc);
+
+    m.push(ffa);
+    m.push(gfa);
+    m.push(hfa);
+    m.push(ffb);
+    m.push(gfb);
+    m.push(hfb);
+    m.push(ffc);
+    m.push(gfc);
+    m.push(hfc);
+    */
+    /* EXAMPLE 3
     let ga = Term::G(Box::new(Term::A));
     let ha = Term::H(Box::new(Term::A));
     let fa = Term::F(Box::new(Term::A));
@@ -254,5 +371,27 @@ fn main() {
     m.push(gfc);
     m.push(hfc);
 
+    m.push(Term::A);
+    m.push(Term::B);
+    m.push(Term::C);
+    */
+
+    let a = Term::A;
+    let b = Term::B;
+    let fa = Term::F(Box::new(a.clone()));
+    let fb = Term::F(Box::new(b.clone()));
+    let ha = Term::H(Box::new(a.clone()));
+    let hb = Term::H(Box::new(b.clone()));
+    let ga = Term::G(Box::new(a.clone()));
+    let gb = Term::G(Box::new(b.clone()));
+
+    m.push(a);
+    m.push(b);
+    m.push(fa);
+    m.push(fb);
+    m.push(ha);
+    m.push(hb);
+    m.push(ga);
+    m.push(gb);
     nongroundcc(equalities, &m);
 }
