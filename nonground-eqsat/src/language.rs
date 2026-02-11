@@ -47,13 +47,13 @@ pub(crate) enum Term {
 impl fmt::Display for Term {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Term::F(_) => write!(f, "f "),
-            Term::G(_) => write!(f, "g "),
-            Term::H(_) => write!(f, "h "),
-            Term::Var(x) => write!(f, "x_{x}"),
-            Term::A => write!(f, "a "),
-            Term::B => write!(f, "b "),
-            Term::C => write!(f, "c "),
+            Term::F(t) => write!(f, "f({})", *t),
+            Term::G(t) => write!(f, "g({})", *t),
+            Term::H(t) => write!(f, "h({})", *t),
+            Term::Var(x) => write!(f, "x_{}", x),
+            Term::A => write!(f, "a"),
+            Term::B => write!(f, "b"),
+            Term::C => write!(f, "c"),
         }
     }
 }

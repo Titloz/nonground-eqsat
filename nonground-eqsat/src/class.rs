@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, fmt::Display};
 
 use crate::language::Term;
 
@@ -47,5 +47,20 @@ impl Class {
         } else {
             HashSet::new()
         }
+    }
+}
+
+impl Display for Class {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let _ = write!(f, "==== Class ====\n");
+        let _ = write!(f, "Terms:\n");
+        for t in &self.terms {
+            let _ = write!(f, "{},\n", t);
+        }
+        let _ = write!(f, "\nConstraints:\n");
+        for c in &self.constraints {
+            let _ = write!(f, "{},\n", c);
+        }
+        write!(f,"\n")
     }
 }

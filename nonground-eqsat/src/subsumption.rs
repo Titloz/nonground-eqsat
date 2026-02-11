@@ -5,7 +5,7 @@ use crate::language::Term;
 
 pub(crate) fn check_subsumption(m: &Vec<Term>, c0: &Class, c1: &Class, nb_vars: &mut usize) -> bool {
     if (&c0).sepvars().is_empty() {
-        check_subsumption_fv(m, c0, c1, &Subst::new(), nb_vars) //, empty_subst
+        check_subsumption_fv(m, c0, c1, &Subst::new(), nb_vars) 
     } else {
         for t0 in c0.terms.clone() {
             for t1 in c1.terms.clone() {

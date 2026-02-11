@@ -77,11 +77,182 @@ fn nongroundcc(e: VecDeque<Equality>, m: &Vec<Term>) {
             }
         } 
     }
+    for c in wo {
+        print!("{}", c);
+    }
 }
 
 
 fn main() {
-    let equalities : VecDeque<Equality> = VecDeque::new(); // get the equalities
-    let m : Vec<Term> = Vec::new();
+    let mut equalities : VecDeque<Equality> = VecDeque::new(); // get the equalities
+    /* EXAMPLE 1
+    let lhs0 : Term = Term::G(Box::new(Term::Var(0)));
+    let rhs0 : Term = Term::H(Box::new(Term::Var(0)));
+    let eq0 : Equality = Equality {lhs: lhs0, rhs: rhs0};
+    let lhs1 : Term = Term::H(Box::new(Term::H(Box::new(Term::Var(1)))));
+    let rhs1 : Term = Term::F(Box::new(Term::H(Box::new(Term::Var(1)))));
+    let eq1 = Equality {lhs: lhs1, rhs: rhs1};
+    equalities.push_back(eq0);
+    equalities.push_back(eq1);
+    */
+
+    let lhs0 = Term::G(Box::new(Term::Var(0)));
+    let rhs0 = Term::A;
+    let eq0 = Equality {lhs: lhs0, rhs: rhs0};
+    let lhs1 = Term::H(Box::new(Term::Var(1)));
+    let rhs1 = Term::A;
+    let eq1 = Equality {lhs: lhs1, rhs: rhs1};
+    let lhs2 = Term::G(Box::new(Term::H(Box::new(Term::Var(2)))));
+    let rhs2 = Term::H(Box::new(Term::H(Box::new(Term::Var(2)))));
+    let eq2 = Equality {lhs: lhs2, rhs: rhs2};
+
+    equalities.push_back(eq0);
+    equalities.push_back(eq1);
+    equalities.push_back(eq2);
+
+    let mut m : Vec<Term> = Vec::new(); // get the ground terms
+
+    /* EXAMPLE 1
+    let ga = Term::G(Box::new(Term::A));
+    let ha = Term::H(Box::new(Term::A));
+    let fa = Term::F(Box::new(Term::A));
+    let fha = Term::F(Box::new(ha.clone()));
+    let gha = Term::G(Box::new(ha.clone()));
+    let hha = Term::H(Box::new(ha.clone()));
+    let fga = Term::F(Box::new(ga.clone()));
+    let gga = Term::G(Box::new(ga.clone()));
+    let hga = Term::H(Box::new(ga.clone()));
+
+    let gb = Term::G(Box::new(Term::B));
+    let hb = Term::H(Box::new(Term::B));
+    let fb = Term::F(Box::new(Term::B));
+    let fhb = Term::F(Box::new(hb.clone()));
+    let ghb = Term::G(Box::new(hb.clone()));
+    let hhb = Term::H(Box::new(hb.clone()));
+    let fgb = Term::F(Box::new(gb.clone()));
+    let ggb = Term::G(Box::new(gb.clone()));
+    let hgb = Term::H(Box::new(gb.clone()));
+
+    let gc = Term::G(Box::new(Term::C));
+    let hc = Term::H(Box::new(Term::C));
+    let fc = Term::F(Box::new(Term::C));
+    let fhc = Term::F(Box::new(hc.clone()));
+    let ghc = Term::G(Box::new(hc.clone()));
+    let hhc = Term::H(Box::new(hc.clone()));
+    let fgc = Term::F(Box::new(gc.clone()));
+    let ggc = Term::G(Box::new(gc.clone()));
+    let hgc = Term::H(Box::new(gc.clone()));
+    
+    m.push(ga);
+    m.push(ha);
+    m.push(fa);
+    m.push(fha);
+    m.push(gha);
+    m.push(hha);
+    m.push(fga);
+    m.push(gga);
+    m.push(hga);
+
+    m.push(gb);
+    m.push(hb);
+    m.push(fb);
+    m.push(fhb);
+    m.push(ghb);
+    m.push(hhb);
+    m.push(fgb);
+    m.push(ggb);
+    m.push(hgb);
+
+    m.push(gc);
+    m.push(hc);
+    m.push(fc);
+    m.push(fhc);
+    m.push(ghc);
+    m.push(hhc);
+    m.push(fgc);
+    m.push(ggc);
+    m.push(hgc);
+    */
+
+    let ga = Term::G(Box::new(Term::A));
+    let ha = Term::H(Box::new(Term::A));
+    let fa = Term::F(Box::new(Term::A));
+    let fha = Term::F(Box::new(ha.clone()));
+    let gha = Term::G(Box::new(ha.clone()));
+    let hha = Term::H(Box::new(ha.clone()));
+    let fga = Term::F(Box::new(ga.clone()));
+    let gga = Term::G(Box::new(ga.clone()));
+    let hga = Term::H(Box::new(ga.clone()));
+
+    let gb = Term::G(Box::new(Term::B));
+    let hb = Term::H(Box::new(Term::B));
+    let fb = Term::F(Box::new(Term::B));
+    let fhb = Term::F(Box::new(hb.clone()));
+    let ghb = Term::G(Box::new(hb.clone()));
+    let hhb = Term::H(Box::new(hb.clone()));
+    let fgb = Term::F(Box::new(gb.clone()));
+    let ggb = Term::G(Box::new(gb.clone()));
+    let hgb = Term::H(Box::new(gb.clone()));
+
+    let gc = Term::G(Box::new(Term::C));
+    let hc = Term::H(Box::new(Term::C));
+    let fc = Term::F(Box::new(Term::C));
+    let fhc = Term::F(Box::new(hc.clone()));
+    let ghc = Term::G(Box::new(hc.clone()));
+    let hhc = Term::H(Box::new(hc.clone()));
+    let fgc = Term::F(Box::new(gc.clone()));
+    let ggc = Term::G(Box::new(gc.clone()));
+    let hgc = Term::H(Box::new(gc.clone()));
+
+    let ffa = Term::F(Box::new(fa.clone()));
+    let gfa = Term::G(Box::new(fa.clone()));
+    let hfa = Term::H(Box::new(fa.clone()));
+    let ffb = Term::F(Box::new(fb.clone()));
+    let gfb = Term::G(Box::new(fb.clone()));
+    let hfb = Term::H(Box::new(fb.clone()));
+    let ffc = Term::F(Box::new(fc.clone()));
+    let gfc = Term::G(Box::new(fc.clone()));
+    let hfc = Term::H(Box::new(fc.clone()));
+
+    m.push(ga);
+    m.push(ha);
+    m.push(fa);
+    m.push(fha);
+    m.push(gha);
+    m.push(hha);
+    m.push(fga);
+    m.push(gga);
+    m.push(hga);
+
+    m.push(gb);
+    m.push(hb);
+    m.push(fb);
+    m.push(fhb);
+    m.push(ghb);
+    m.push(hhb);
+    m.push(fgb);
+    m.push(ggb);
+    m.push(hgb);
+
+    m.push(gc);
+    m.push(hc);
+    m.push(fc);
+    m.push(fhc);
+    m.push(ghc);
+    m.push(hhc);
+    m.push(fgc);
+    m.push(ggc);
+    m.push(hgc);
+
+    m.push(ffa);
+    m.push(gfa);
+    m.push(hfa);
+    m.push(ffb);
+    m.push(gfb);
+    m.push(hfb);
+    m.push(ffc);
+    m.push(gfc);
+    m.push(hfc);
+
     nongroundcc(equalities, &m);
 }
