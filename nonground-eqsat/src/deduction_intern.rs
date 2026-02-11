@@ -6,8 +6,8 @@ use crate::language::Term;
 use crate::util::{symdiff, pop_value};
 use crate::smt::sat;
 
-pub(crate) fn deduct_intern(m: &Vec<Term>, wo: &mut VecDeque<Class>, us: &mut VecDeque<Class>, t0: Term, t1: Term, i: usize, n: usize, c0: &Class, c_new: &mut Class, used: bool) -> bool {
-    if i!=n {
+pub(crate) fn deduct_intern(m: &Vec<Term>, wo: &mut VecDeque<Class>, us: &mut VecDeque<Class>, t0: Term, t1: Term, i: usize, n: usize, c0: &Class, c_new: &mut Class, used: bool, nb_vars: &mut usize) -> bool {
+    if i != n {
         for c in wo.clone() {
             let cbis = &c.clone();
             let cter = &c.clone();
@@ -23,7 +23,67 @@ pub(crate) fn deduct_intern(m: &Vec<Term>, wo: &mut VecDeque<Class>, us: &mut Ve
                     //todo!("see comments deduct_intern");
                     // t0 = t0[s0]_i
                     // t1 = t1[s1]_i
-                    if !deduct_intern(m, wo, us, t0.clone(), t1.clone(), i+1, n, c0, c_new, (c == *c0) || used) {
+                    let t0_new : Term = match t0.clone() {
+                        Term::F(t) => {
+                            match *t {
+                                Term::Var(_) => {
+                                    let b = Box::new(s0.clone());
+                                    Term::F(b)
+                                },
+                                _ => t0.clone(),
+                            }
+                        },
+                        Term::G(t) => {
+                            match *t {
+                                Term::Var(_) => {
+                                    let b = Box::new(s0.clone());
+                                    Term::G(b)
+                                },
+                                _ => t0.clone(),
+                            }
+                        },
+                        Term::H(t) => {
+                            match *t {
+                                Term::Var(_) => {
+                                    let b = Box::new(s0.clone());
+                                    Term::H(b)
+                                },
+                                _ => t0.clone(),
+                            }
+                        },
+                        _ => t0.clone(),
+                    };
+                    let t1_new = match t1.clone() {
+                        Term::F(t) => {
+                            match *t {
+                                Term::Var(_) => {
+                                    let b = Box::new(s1.clone());
+                                    Term::F(b)
+                                },
+                                _ => t1.clone(),
+                            }
+                        },
+                        Term::G(t) => {
+                            match *t {
+                                Term::Var(_) => {
+                                    let b = Box::new(s1.clone());
+                                    Term::G(b)
+                                },
+                                _ => t1.clone(),
+                            }
+                        },
+                        Term::H(t) => {
+                            match *t {
+                                Term::Var(_) => {
+                                    let b = Box::new(s1.clone());
+                                    Term::H(b)
+                                },
+                                _ => t1.clone(),
+                            }
+                        },
+                        _ => t1.clone(),
+                    };
+                    if !deduct_intern(m, wo, us, t0_new, t1_new, i+1, n, c0, c_new, (c == *c0) || used, nb_vars) {
                         return false;
                     }
                 }
@@ -39,18 +99,18 @@ pub(crate) fn deduct_intern(m: &Vec<Term>, wo: &mut VecDeque<Class>, us: &mut Ve
         c_new.constraints.push(t1.clone());
         if sat(m, &(c_new.constraints)) {
             for c in wo.clone() {
-                if check_subsumption(m, &c, &c_new) {
+                if check_subsumption(m, &c, &c_new, nb_vars) {
                     return true;
                 }
             }
             for c in us.clone() {
-                if check_subsumption(m, &c, &c_new) {
+                if check_subsumption(m, &c, &c_new, nb_vars) {
                     return true;
                 }
             }
             let mut subsumed : bool = false;
             for c in wo.clone() {
-                if check_subsumption(m, &c_new, &c) {
+                if check_subsumption(m, &c_new, &c, nb_vars) {
                     pop_value(wo, &c);
                     pop_value(us, &c);
                     if c==(*c0) {
@@ -59,7 +119,7 @@ pub(crate) fn deduct_intern(m: &Vec<Term>, wo: &mut VecDeque<Class>, us: &mut Ve
                 }
             }
             for c in us.clone() {
-                if check_subsumption(m, &c_new, &c) {
+                if check_subsumption(m, &c_new, &c, nb_vars) {
                     pop_value(wo, &c);
                     pop_value(us, &c);
                     if c==(*c0) {

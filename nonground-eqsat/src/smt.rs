@@ -3,22 +3,58 @@ use std::collections::{HashMap, HashSet};
 use crate::language::Term;
 use crate::util::{Subst, apply, matches_all};
 
-pub(crate) fn sat(m: &Vec<Term>, gamma: &Vec<Term>) -> bool {
-    //let gamma = &c.constraints;
-    /* 
-    let g2 = gamma.clone();
-    for t in g2 {
-        let deltas = matches_all(&t, &gamma);
-        if deltas.is_empty() {
-            return false
-        } else {
-            for mut d in deltas {
+pub(crate) fn sat(m0: &Vec<Term>, gamma: &Vec<Term>) -> bool {
 
+    fn aux(m: &Vec<Term>, g: &Vec<Term>, l: &mut Vec<Subst>) -> bool {
+        if l.is_empty() {
+            false
+        } else {
+            // get the variables appearing in delta and in gamma
+            let delta : Subst = l.pop().expect("");
+            let dom_delta = delta.len();
+            let mut vars_gamma = HashSet::new();
+            for t in g.clone() {
+                let vars = t.get_vars();
+                for x in vars {
+                    vars_gamma.insert(x);
+                }
+            }
+            let nb_vars_gamma = vars_gamma.len();
+            if dom_delta == nb_vars_gamma {
+                // delta is grounding for gamma
+                let applied = g.clone().into_iter().map(|t| apply(&delta, &t));
+                // we check that every term is indeed in M
+                for t in applied {
+                    if matches_all(&t, m).is_empty() {
+                        return aux(m, g, l);
+                    }
+                }
+                true
+            } else {
+                // we must extend the subst
+                let applied = g.clone().into_iter().map(|t| apply(&delta, &t));
+                for t in applied {
+                    // one must exist
+                    if !t.is_ground() {
+                        let deltas = matches_all(&t, m); // todo
+                        for mut d in deltas {
+                            for (k,v) in delta.clone() {
+                                d.insert(k, v);
+                            }
+                            l.push(d);
+                        }
+                        break
+                    }
+                }
+                aux(m, g, l)
             }
         }
     }
-    */
-    true
+    
+    let mut l = Vec::new();
+    let d : Subst = HashMap::new();
+    l.push(d);
+    aux(m0, gamma, &mut l)
 }
 
 pub(crate) fn implication_test(c0 : &Vec<Term>, c1 : &Vec<Term>, m0 : &Vec<Term>) -> bool {

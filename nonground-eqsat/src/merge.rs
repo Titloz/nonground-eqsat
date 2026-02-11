@@ -6,7 +6,7 @@ use crate::util::{mgu, apply, pop_value};
 use crate::smt::sat;
 use crate::language::Term;
 
-pub(crate) fn merge(m: &Vec<Term>, wo: &mut VecDeque<Class>, us: &mut VecDeque<Class>, c0: Class) -> bool {
+pub(crate) fn merge(m: &Vec<Term>, wo: &mut VecDeque<Class>, us: &mut VecDeque<Class>, c0: Class, nb_vars: &mut usize) -> bool {
     for c1 in wo.clone() {
         for t0 in c0.terms.clone() {
             for t1 in c1.terms.clone() {
@@ -33,23 +33,23 @@ pub(crate) fn merge(m: &Vec<Term>, wo: &mut VecDeque<Class>, us: &mut VecDeque<C
                         if sat(m, &(c_new.constraints)) {
                             let mut subsumed : bool = false;
                             for c in wo.clone() {
-                                if check_subsumption(m, &c, &c_new) {
+                                if check_subsumption(m, &c, &c_new, nb_vars) {
                                     subsumed = true;
                                     break;
                                 }
                             }
                             for c in us.clone() {
-                                if check_subsumption(m, &c, &c_new) {
+                                if check_subsumption(m, &c, &c_new, nb_vars) {
                                     subsumed = true;
                                     break;
                                 }
                             }
-                            if check_subsumption(m, &c0, &c_new) {
+                            if check_subsumption(m, &c0, &c_new, nb_vars) {
                                     subsumed = true;
                             }
                             if !subsumed {
                                 for c in wo.clone() {
-                                    if check_subsumption(m, &c_new, &c) {
+                                    if check_subsumption(m, &c_new, &c, nb_vars) {
                                         pop_value(wo, &c);
                                         pop_value(us, &c);
                                         if c == c0.clone() {
