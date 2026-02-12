@@ -4,7 +4,7 @@ use crate::language::Term;
 use crate::util::{Subst, apply, matches_all};
 
 pub(crate) fn sat(m0: &Vec<Term>, gamma: &Vec<Term>) -> bool {
-
+    
     fn aux(m: &Vec<Term>, g: &Vec<Term>, l: &mut Vec<Subst>) -> bool {
         if l.is_empty() {
             false
@@ -54,7 +54,8 @@ pub(crate) fn sat(m0: &Vec<Term>, gamma: &Vec<Term>) -> bool {
     let mut l = Vec::new();
     let d : Subst = HashMap::new();
     l.push(d);
-    aux(m0, gamma, &mut l)
+    aux(m0, gamma, &mut l) 
+    
 }
 
 pub(crate) fn implication_test(c0 : &Vec<Term>, c1 : &Vec<Term>, m0 : &Vec<Term>) -> bool {

@@ -2,7 +2,7 @@ use std::{collections::HashSet, fmt::Display};
 
 use crate::language::Term;
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Eq, Hash)]
 pub(crate) struct Class {
     pub terms: Vec<Term>,
     pub constraints: Vec<Term>,

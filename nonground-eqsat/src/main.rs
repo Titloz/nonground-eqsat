@@ -8,7 +8,7 @@ mod util;
 mod smt;
 
 
-use std::collections::VecDeque;
+use std::collections::{HashSet, VecDeque};
 
 use crate::language::{Term, Equality};
 use crate::class::Class;
@@ -68,16 +68,34 @@ fn nongroundcc(e: VecDeque<Equality>, m: &Vec<Term>) {
     wo.push_back(cb);
     wo.push_back(cc);
 
+    // until main loop : experimental
+    let mut wo_set : HashSet<Class> = HashSet::new();
+    for c in wo.clone() {
+        wo_set.insert(c);
+    }
     // main loop
     while !us.is_empty() {
         let c : Class = us.pop_front().expect("");
         if merge(m, &mut wo, &mut us, c.clone(), &mut nvars){
             if deduct(m, &mut wo, &mut us, c.clone(), &mut nvars){
-                wo.push_back(c);
+                // wo.push_back(c)
+                // OR
+                if !wo_set.contains(&c){
+                    wo_set.insert(c.clone());
+                    wo.push_back(c);
+                }
             }
         } 
     }
+    let mut wo_final = Vec::new();
+    let mut wo_hash = HashSet::new();
     for c in wo {
+        if !wo_hash.contains(&c){
+            let _ = wo_hash.insert(c.clone());
+            wo_final.push(c);
+        }
+    }
+    for c in wo_final {
         print!("{}", c);
     }
 }
@@ -85,7 +103,8 @@ fn nongroundcc(e: VecDeque<Equality>, m: &Vec<Term>) {
 
 fn main() {
     let mut equalities : VecDeque<Equality> = VecDeque::new(); // get the equalities
-    /* EXAMPLE 1
+    //EXAMPLE 1
+    /* 
     let lhs0 : Term = Term::G(Box::new(Term::Var(0)));
     let rhs0 : Term = Term::H(Box::new(Term::Var(0)));
     let eq0 : Equality = Equality {lhs: lhs0, rhs: rhs0};
@@ -95,7 +114,7 @@ fn main() {
     equalities.push_back(eq0);
     equalities.push_back(eq1);
     */
-    /* EXAMPLE 2
+    // EXAMPLE 2
     let lhs0 = Term::G(Box::new(Term::Var(0)));
     let rhs0 = Term::A;
     let eq0 = Equality {lhs: lhs0, rhs: rhs0};
@@ -109,14 +128,14 @@ fn main() {
     equalities.push_back(eq0);
     equalities.push_back(eq1);
     equalities.push_back(eq2);
-    */
+    
     /* EXAMPLE 3
     let lhs0 = Term::F(Box::new(Term::Var(0)));
     let rhs0 = Term::G(Box::new(Term::Var(0)));
     let eq0 = Equality {lhs: lhs0, rhs:rhs0};
     equalities.push_back(eq0);
     */
-
+    /* 
     let lhs0 = Term::F(Box::new(Term::A));
     let rhs0 = Term::H(Box::new(Term::A));
     let eq0 = Equality {lhs: lhs0, rhs: rhs0};
@@ -145,10 +164,11 @@ fn main() {
     equalities.push_back(eq4);
     equalities.push_back(eq5);
     equalities.push_back(eq6);
-
+    */
     let mut m : Vec<Term> = Vec::new(); // get the ground terms
 
-    /* EXAMPLE 1
+    //EXAMPLE 1
+    /* 
     let ga = Term::G(Box::new(Term::A));
     let ha = Term::H(Box::new(Term::A));
     let fa = Term::F(Box::new(Term::A));
@@ -209,7 +229,7 @@ fn main() {
     m.push(ggc);
     m.push(hgc);
     */
-    /* EXAMPLE 2
+    // EXAMPLE 2
     let ga = Term::G(Box::new(Term::A));
     let ha = Term::H(Box::new(Term::A));
     let fa = Term::F(Box::new(Term::A));
@@ -289,7 +309,7 @@ fn main() {
     m.push(ffc);
     m.push(gfc);
     m.push(hfc);
-    */
+    
     /* EXAMPLE 3
     let ga = Term::G(Box::new(Term::A));
     let ha = Term::H(Box::new(Term::A));
@@ -375,7 +395,7 @@ fn main() {
     m.push(Term::B);
     m.push(Term::C);
     */
-
+    /* EXAMPLE 4
     let a = Term::A;
     let b = Term::B;
     let fa = Term::F(Box::new(a.clone()));
@@ -393,5 +413,6 @@ fn main() {
     m.push(hb);
     m.push(ga);
     m.push(gb);
+    */
     nongroundcc(equalities, &m);
 }

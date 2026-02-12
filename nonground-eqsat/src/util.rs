@@ -84,7 +84,11 @@ pub(crate) fn matches_all(t0: &Term, v: &Vec<Term>) -> Vec<Subst> {
     for t1 in v {
         match matches(t0, t1) {
             None => continue,
-            Some(sigma) => new_vec.push(sigma),
+            Some(sigma) => {
+                if !new_vec.contains(&sigma) {
+                    new_vec.push(sigma);
+                }
+            },
         }
     }
     new_vec
@@ -119,12 +123,14 @@ pub(crate) fn apply(sigma: &Subst, t: &Term) -> Term {
 }
 
 pub(crate) fn pop_value(vdq: &mut VecDeque<Class>, c: &Class) { // -> VecDeque<Class>
-    // direclty modifies vdq
+    // directly modifies vdq
     let mut vd : VecDeque<Class> = VecDeque::new();
-    let mut b: bool = false;
+    // the choice to "mute" b is temporary. I want to try out
+    //let mut b: bool = false;
     for d in vdq.clone() {
-        if d == *c && !b {
-            b = true;
+        if d == *c { // && !b, 
+            //b = true;
+            continue;
         } else {
             vd.push_back(d);
         }

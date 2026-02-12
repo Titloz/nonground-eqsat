@@ -6,7 +6,11 @@ use crate::language::Term;
 use crate::util::pop_value;
 
 pub(crate) fn deduct(m: &Vec<Term>, wo: &mut VecDeque<Class>, us: &mut VecDeque<Class>, c0: Class, nb_vars: &mut usize) -> bool {
-    wo.push_back(c0.clone());
+    
+    // the if is experimental
+    if !wo.contains(&c0) {
+        wo.push_back(c0.clone());
+    }
     // for each f in Term with arity(f)=n and n>0 
     let f0 : Term = Term::F(Box::new(Term::Var(*nb_vars))); 
     *nb_vars += 1;

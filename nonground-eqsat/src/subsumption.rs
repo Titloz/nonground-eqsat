@@ -32,7 +32,7 @@ pub(crate) fn check_subsumption(m: &Vec<Term>, c0: &Class, c1: &Class, nb_vars: 
     }
 }
 
-fn check_subsumption_fv(m: &Vec<Term>, c0: &Class, c1: &Class, sigma: &Subst, nb_vars: &mut usize) -> bool { 
+fn check_subsumption_fv(m: &Vec<Term>, c0: &Class, c1: &Class, sigma: &Subst, _nb_vars: &mut usize) -> bool { 
     // checks if c0 subsumes c1
     for t1 in c1.terms.clone() {
         let mut result: bool = false;
@@ -47,10 +47,9 @@ fn check_subsumption_fv(m: &Vec<Term>, c0: &Class, c1: &Class, sigma: &Subst, nb
                         let ttau = apply(&tau, &tsigma);
                         v.push(ttau);
                     }
-                    if implication_test(&(c0.constraints), &(c1.constraints), m) {
+                    if implication_test(&(c1.constraints), &(c0.constraints), m) {
                         result = true;
                         break;
-                        // does break have the correct semantics here?
                     }
                 },
             }
