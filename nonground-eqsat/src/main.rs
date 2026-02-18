@@ -8,7 +8,7 @@ mod util;
 mod smt;
 
 
-use std::collections::{HashSet, VecDeque};
+use std::collections::VecDeque; // HashSet, 
 
 use crate::language::{Term, Equality};
 use crate::class::Class;
@@ -43,9 +43,9 @@ fn nongroundcc(e: VecDeque<Equality>, m: &Vec<Term>) {
     let mut cf : Class = Class::new();
     let mut cg : Class = Class::new();
     let mut ch : Class = Class::new();
-    let mut ca : Class = Class::new();
-    let mut cb : Class = Class::new();
-    let mut cc : Class = Class::new();
+    //let mut ca : Class = Class::new();
+    //let mut cb : Class = Class::new();
+    //let mut cc : Class = Class::new();
     cf.terms.push(Term::F(Box::new(Term::Var(nvars)))); 
     cf.constraints.push(Term::F(Box::new(Term::Var(nvars))));
     nvars += 1;
@@ -55,38 +55,42 @@ fn nongroundcc(e: VecDeque<Equality>, m: &Vec<Term>) {
     ch.terms.push(Term::H(Box::new(Term::Var(nvars)))); 
     ch.constraints.push(Term::H(Box::new(Term::Var(nvars))));
     nvars += 1;
-    ca.terms.push(Term::A);
-    ca.constraints.push(Term::A);
-    cb.terms.push(Term::B);
-    cb.constraints.push(Term::B);
-    cc.terms.push(Term::C);
-    cc.constraints.push(Term::C);
+    //ca.terms.push(Term::A);
+    //ca.constraints.push(Term::A);
+    //cb.terms.push(Term::B);
+    //cb.constraints.push(Term::B);
+    //cc.terms.push(Term::C);
+    //cc.constraints.push(Term::C);
     wo.push_back(cf);
     wo.push_back(cg);
     wo.push_back(ch);
-    wo.push_back(ca);
-    wo.push_back(cb);
-    wo.push_back(cc);
+    //wo.push_back(ca);
+    //wo.push_back(cb);
+    //wo.push_back(cc);
 
     // until main loop : experimental
-    let mut wo_set : HashSet<Class> = HashSet::new();
+    /*let mut wo_set : HashSet<Class> = HashSet::new();
     for c in wo.clone() {
         wo_set.insert(c);
-    }
+    }*/
     // main loop
     while !us.is_empty() {
         let c : Class = us.pop_front().expect("");
         if merge(m, &mut wo, &mut us, c.clone(), &mut nvars){
             if deduct(m, &mut wo, &mut us, c.clone(), &mut nvars){
-                // wo.push_back(c)
-                // OR
-                if !wo_set.contains(&c){
-                    wo_set.insert(c.clone());
+                if !wo.contains(&c) {
                     wo.push_back(c);
                 }
+                // OR
+                /*if !wo_set.contains(&c){
+                    wo_set.insert(c.clone());
+                    wo.push_back(c);
+                }*/
             }
         } 
     }
+    // to avoid doublons
+    /* 
     let mut wo_final = Vec::new();
     let mut wo_hash = HashSet::new();
     for c in wo {
@@ -95,7 +99,8 @@ fn nongroundcc(e: VecDeque<Equality>, m: &Vec<Term>) {
             wo_final.push(c);
         }
     }
-    for c in wo_final {
+    */
+    for c in wo { //_final
         print!("{}", c);
     }
 }
@@ -103,7 +108,7 @@ fn nongroundcc(e: VecDeque<Equality>, m: &Vec<Term>) {
 
 fn main() {
     let mut equalities : VecDeque<Equality> = VecDeque::new(); // get the equalities
-    //EXAMPLE 1
+    //EXAMPLE 1 : OK
     /* 
     let lhs0 : Term = Term::G(Box::new(Term::Var(0)));
     let rhs0 : Term = Term::H(Box::new(Term::Var(0)));
@@ -114,7 +119,8 @@ fn main() {
     equalities.push_back(eq0);
     equalities.push_back(eq1);
     */
-    // EXAMPLE 2
+    // EXAMPLE 2 : NOT OK because of overflow...
+    
     let lhs0 = Term::G(Box::new(Term::Var(0)));
     let rhs0 = Term::A;
     let eq0 = Equality {lhs: lhs0, rhs: rhs0};
@@ -129,12 +135,13 @@ fn main() {
     equalities.push_back(eq1);
     equalities.push_back(eq2);
     
-    /* EXAMPLE 3
-    let lhs0 = Term::F(Box::new(Term::Var(0)));
+    //EXAMPLE 3 : OK
+    /*let lhs0 = Term::F(Box::new(Term::Var(0)));
     let rhs0 = Term::G(Box::new(Term::Var(0)));
     let eq0 = Equality {lhs: lhs0, rhs:rhs0};
     equalities.push_back(eq0);
     */
+    //EXAMPLE 4 : OK
     /* 
     let lhs0 = Term::F(Box::new(Term::A));
     let rhs0 = Term::H(Box::new(Term::A));
@@ -230,6 +237,7 @@ fn main() {
     m.push(hgc);
     */
     // EXAMPLE 2
+    
     let ga = Term::G(Box::new(Term::A));
     let ha = Term::H(Box::new(Term::A));
     let fa = Term::F(Box::new(Term::A));
@@ -269,6 +277,10 @@ fn main() {
     let ffc = Term::F(Box::new(fc.clone()));
     let gfc = Term::G(Box::new(fc.clone()));
     let hfc = Term::H(Box::new(fc.clone()));
+
+    let a = Term::A;
+    let b = Term::B;
+    let c = Term::C;
 
     m.push(ga);
     m.push(ha);
@@ -310,7 +322,12 @@ fn main() {
     m.push(gfc);
     m.push(hfc);
     
-    /* EXAMPLE 3
+    m.push(a);
+    m.push(b);
+    m.push(c);
+    
+    //EXAMPLE 3
+    /* 
     let ga = Term::G(Box::new(Term::A));
     let ha = Term::H(Box::new(Term::A));
     let fa = Term::F(Box::new(Term::A));
@@ -395,7 +412,8 @@ fn main() {
     m.push(Term::B);
     m.push(Term::C);
     */
-    /* EXAMPLE 4
+    //EXAMPLE 4
+    /* 
     let a = Term::A;
     let b = Term::B;
     let fa = Term::F(Box::new(a.clone()));

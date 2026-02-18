@@ -48,6 +48,17 @@ impl Class {
             HashSet::new()
         }
     }
+
+    pub(crate) fn _get_vars(&self) -> HashSet<usize> {
+        let mut set = HashSet::new();
+        for t in &self.terms {
+            let v = t.get_vars();
+            for x in v {
+                set.insert(x);
+            }
+        }
+        set
+    }
 }
 
 impl Display for Class {

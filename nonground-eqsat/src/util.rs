@@ -6,6 +6,13 @@ use crate::class::Class;
 
 pub(crate) type Subst = HashMap<usize,Term>; 
 
+pub(crate) fn print_subst(sigma: Subst) {
+    for (x,t) in sigma {
+        print!("({} |-> {})",x,t);
+    }
+    print!("\n")
+}
+
 /*pub(crate) fn unifiable(t0: &Term, t1: &Term) -> bool {
     match mgu(&t0, &t1) {
         None => false,
@@ -160,4 +167,32 @@ pub(crate) fn symdiff(v1: Vec<Term>, v2: Vec<Term>) -> Vec<Term> {
         new_v = pop_allval(&new_v, el);
     }
     new_v
+}
+
+pub(crate) fn rename(c: Class, nb_vars: &mut usize) -> Class {
+    let mut newc = Class::new();
+    let mut sigma : Subst = Subst::new();
+    for t in c.terms {
+        let vars = t.get_vars();
+        for v in vars.into_iter() {
+            if !sigma.contains_key(&v) {
+                sigma.insert(v, Term::Var(*nb_vars));
+                *nb_vars += 1;
+            }
+        }
+        newc.terms.push(apply(&sigma, &t));
+    }
+    // note : if a variable only appears in the constraints and not in the terms
+    // i might want to delete the constraints. I have to look at the rules again.
+    for t in c.constraints {
+        let vars = t.get_vars();
+        for v in vars.into_iter() {
+            if !sigma.contains_key(&v) {
+                sigma.insert(v, Term::Var(*nb_vars));
+                *nb_vars += 1;
+            }
+        }
+        newc.constraints.push(apply(&sigma, &t));
+    }
+    newc
 }
