@@ -119,7 +119,7 @@ fn main() {
     equalities.push_back(eq0);
     equalities.push_back(eq1);
     */
-    // EXAMPLE 2 : NOT OK because of overflow...
+    // EXAMPLE 2 : OK -> their presentation of the class is actually not minimal!
     
     let lhs0 = Term::G(Box::new(Term::Var(0)));
     let rhs0 = Term::A;
@@ -130,11 +130,14 @@ fn main() {
     let lhs2 = Term::G(Box::new(Term::H(Box::new(Term::Var(2)))));
     let rhs2 = Term::H(Box::new(Term::H(Box::new(Term::Var(2)))));
     let eq2 = Equality {lhs: lhs2, rhs: rhs2};
-
+    // the next equality is simply to not see the "f", it will behave as an other "g"
+    let lhs3 = Term::F(Box::new(Term::Var(3)));
+    let rhs3 = Term::G(Box::new(Term::Var(3)));
+    let eq3 = Equality {lhs: lhs3, rhs: rhs3};
     equalities.push_back(eq0);
     equalities.push_back(eq1);
     equalities.push_back(eq2);
-    
+    equalities.push_back(eq3);
     //EXAMPLE 3 : OK
     /*let lhs0 = Term::F(Box::new(Term::Var(0)));
     let rhs0 = Term::G(Box::new(Term::Var(0)));

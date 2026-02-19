@@ -170,11 +170,12 @@ pub(crate) fn symdiff(v1: Vec<Term>, v2: Vec<Term>) -> Vec<Term> {
 }
 
 pub(crate) fn rename(c: Class, nb_vars: &mut usize) -> Class {
+    print!("rename nb_vars = {}\n", *nb_vars);
     let mut newc = Class::new();
     let mut sigma : Subst = Subst::new();
     for t in c.terms {
         let vars = t.get_vars();
-        for v in vars.into_iter() {
+        for v in vars {
             if !sigma.contains_key(&v) {
                 sigma.insert(v, Term::Var(*nb_vars));
                 *nb_vars += 1;
@@ -186,7 +187,7 @@ pub(crate) fn rename(c: Class, nb_vars: &mut usize) -> Class {
     // i might want to delete the constraints. I have to look at the rules again.
     for t in c.constraints {
         let vars = t.get_vars();
-        for v in vars.into_iter() {
+        for v in vars {
             if !sigma.contains_key(&v) {
                 sigma.insert(v, Term::Var(*nb_vars));
                 *nb_vars += 1;
@@ -194,5 +195,6 @@ pub(crate) fn rename(c: Class, nb_vars: &mut usize) -> Class {
         }
         newc.constraints.push(apply(&sigma, &t));
     }
+    //print!("at the end of rename, newc = {}\n", newc);
     newc
 }

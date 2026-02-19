@@ -7,22 +7,24 @@ use crate::smt::sat;
 use crate::language::Term;
 
 pub(crate) fn merge(m: &Vec<Term>, wo: &mut VecDeque<Class>, us: &mut VecDeque<Class>, c0: Class, nb_vars: &mut usize) -> bool {
-    let sv0 = c0.sepvars();
+    print!("merge, c0:{}\n", c0.clone());
+    //let sv0 = c0.sepvars();
     for c1 in wo.clone() {
         let mut c2 = c1.clone();
-        let sv = c1.sepvars();
-        // not 100% sure about the condition
-        // if I have free variables that are equal here I should still be renaming I believe
-        // TODO
-        if !sv.is_empty() && sv == sv0 { // c1.clone() == c0.clone()
+        //let sv = c1.sepvars();
+        if c1.share_vars(&c0) { // c1.clone() == c0.clone()      !sv.is_empty() && sv == sv0
             // in that case, we should operate on a renaming of c1!
             c2 = rename(c1, nb_vars);
+            //continue;
         }
         for t0 in c0.terms.clone() {
             for t1 in c2.terms.clone() {
+                //print!("t0 = {}\n", t0);
+                //print!("t1 = {}\n", t1);
                 match mgu(&t0, &t1) {
                     None => continue,
                     Some(mu) => {
+                        //print!("ok\n");
                         let mut c_new = Class::new();
                         let mut vterms = Vec::new();
                         let mut vconstraints = Vec::new();
@@ -56,6 +58,7 @@ pub(crate) fn merge(m: &Vec<Term>, wo: &mut VecDeque<Class>, us: &mut VecDeque<C
                         // for c in c_new.constraints.clone() {
                         //     print!("{}\n", c);
                         // }
+                        //print!("before sat\n");
                         let sat = sat(m, &(c_new.constraints));
                         //print!("is sat : {}\n", sat);
                         if sat {
@@ -114,6 +117,7 @@ pub(crate) fn merge(m: &Vec<Term>, wo: &mut VecDeque<Class>, us: &mut VecDeque<C
                                 }
                                 if !subsumed {
                                     //print!("is not subsumed\n");
+                                    continue;
                                 }
                                 us.push_back(c_new);
                                 if subsumed {
@@ -126,5 +130,6 @@ pub(crate) fn merge(m: &Vec<Term>, wo: &mut VecDeque<Class>, us: &mut VecDeque<C
             }
         }
     }
+    print!("end merge\n");
     true
 }

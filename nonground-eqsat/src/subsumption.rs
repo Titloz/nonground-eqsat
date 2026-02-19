@@ -5,7 +5,7 @@ use crate::language::Term;
 
 pub(crate) fn check_subsumption(m: &Vec<Term>, c0: &Class, c1: &Class, nb_vars: &mut usize) -> bool {
     //print!("check_subsumption");
-    //print!("check_subsumption with \n{}\n and \n{}\n", c0.clone(), c1.clone());
+    print!("check_subsumption with \n{}\n and \n{}\n", c0.clone(), c1.clone());
     if (&c0).sepvars().is_empty() {
         check_subsumption_fv(m, c0, c1, &Subst::new(), nb_vars) 
     } else {
@@ -35,7 +35,7 @@ pub(crate) fn check_subsumption(m: &Vec<Term>, c0: &Class, c1: &Class, nb_vars: 
 }
 
 fn check_subsumption_fv(m: &Vec<Term>, c0: &Class, c1: &Class, sigma: &Subst, _nb_vars: &mut usize) -> bool { 
-    //print!("check_subsumption_fv");
+    print!("check_subsumption_fv");
     // checks if c0 subsumes c1
     for t1 in c1.terms.clone() {
         let mut result: bool = false;
@@ -50,7 +50,7 @@ fn check_subsumption_fv(m: &Vec<Term>, c0: &Class, c1: &Class, sigma: &Subst, _n
                         let ttau = apply(&tau, &tsigma);
                         v.push(ttau);
                     }
-                    if implication_test(&(c1.constraints), &(c0.constraints), m) {
+                    if implication_test(&(c1.constraints), &v, m) { // &(c0.constraints)
                         result = true;
                         break;
                     }

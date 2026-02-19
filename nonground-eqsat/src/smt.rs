@@ -1,11 +1,20 @@
 use std::collections::{HashMap, HashSet};
 
 use crate::language::Term;
-use crate::util::{Subst, apply, matches_all, print_subst};
+use crate::util::{Subst, apply, matches_all}; //, print_subst
 
 pub(crate) fn sat(m0: &Vec<Term>, gamma: &Vec<Term>) -> bool {
-    
+    print!("sat\n"); //  with gamma = 
+    //for t in gamma.clone() {
+    //    print!("{},", t);
+    //}
+    print!("\n");
     fn aux(m: &Vec<Term>, g: &Vec<Term>, l: &mut Vec<Subst>) -> bool {
+        //print!("aux with l=\n");
+        //for s in l.clone() {
+        //    print_subst(s);
+        //}
+        //print!("\n");
         if l.is_empty() {
             false
         } else {
@@ -31,8 +40,15 @@ pub(crate) fn sat(m0: &Vec<Term>, gamma: &Vec<Term>) -> bool {
                 }
                 true
             } else {
-                // we must extend the subst
                 let applied = g.clone().into_iter().map(|t| apply(&delta, &t));
+                // check that every ground term is in M
+                for t in applied.clone() {
+                    if t.is_ground() && matches_all(&t, m).is_empty() {
+                        // if not, test an other substitution
+                        return aux(m, g, l);
+                    }
+                }
+                // extend delta
                 for t in applied {
                     // one must exist
                     if !t.is_ground() {
@@ -41,7 +57,9 @@ pub(crate) fn sat(m0: &Vec<Term>, gamma: &Vec<Term>) -> bool {
                             for (k,v) in delta.clone() {
                                 d.insert(k, v);
                             }
-                            l.push(d);
+                            if !l.contains(&d) {
+                                l.push(d);
+                            }
                         }
                         break
                     }
@@ -59,11 +77,12 @@ pub(crate) fn sat(m0: &Vec<Term>, gamma: &Vec<Term>) -> bool {
 }
 
 pub(crate) fn implication_test(c0 : &Vec<Term>, c1 : &Vec<Term>, m0 : &Vec<Term>) -> bool {
+    print!("implication_test\n");
     fn aux(gamma: &Vec<Term>, dstau : &Vec<Term>, l : &mut Vec<Subst>, m : &Vec<Term>) -> bool {
-        print!("implication_test: l=\n");
-        for s in l.clone() {
-            print_subst(s);
-        }
+        //print!("implication_test: l=\n");
+        //for s in l.clone() {
+        //    print_subst(s);
+        //}
         if l.is_empty() {
             true
         } else {
@@ -79,7 +98,7 @@ pub(crate) fn implication_test(c0 : &Vec<Term>, c1 : &Vec<Term>, m0 : &Vec<Term>
             }
             let nb_vars_gamma = vars_gamma.len();
             if dom_delta == nb_vars_gamma {
-                print!("case dom_delta == nb_vars_gamma\n");
+                //print!("case dom_delta == nb_vars_gamma\n");
                 let mut dstau_bis : Vec<Term> = Vec::new();
                 for t in dstau.clone() {
                     dstau_bis.push(apply(&delta, &t));
@@ -91,7 +110,7 @@ pub(crate) fn implication_test(c0 : &Vec<Term>, c1 : &Vec<Term>, m0 : &Vec<Term>
                 }
                 aux(gamma, dstau, l, m)
             } else {
-                print!("case dom_delta != nb_vars_gamma\n");
+                //print!("case dom_delta != nb_vars_gamma\n");
                 // tj = first_non_ground(gamma), we know for a fact that it exists because of the if branching 
                 let g2 = gamma.clone();// gamma.iter().map(|t| apply(&delta, t));
                 let mut tj : Term = Term::A;
@@ -109,7 +128,7 @@ pub(crate) fn implication_test(c0 : &Vec<Term>, c1 : &Vec<Term>, m0 : &Vec<Term>
                         break;
                     }
                 }
-                print!("tj={}\n", tj);
+                //print!("tj={}\n", tj);
                 let deltas = matches_all(&tj, m);
                 for mut d in deltas {
                     let mut b : bool = true;

@@ -7,7 +7,7 @@ use crate::util::{symdiff, pop_value};
 use crate::smt::sat;
 
 pub(crate) fn deduct_intern(m: &Vec<Term>, wo: &mut VecDeque<Class>, us: &mut VecDeque<Class>, t0: Term, t1: Term, i: usize, n: usize, c0: &Class, c_new: &mut Class, used: bool, nb_vars: &mut usize) -> bool {
-    //print!("deduct_intern, used: {}, c0:\n{}\n, c_new:\n{}\n", used, c0.clone(), c_new.clone());
+    print!("deduct_intern, used: {}, c0:\n{}\n, c_new:\n{}\n", used, c0.clone(), c_new.clone());
     if i != n {
         for c in wo.clone() {
             let cbis = &c.clone();
@@ -94,13 +94,15 @@ pub(crate) fn deduct_intern(m: &Vec<Term>, wo: &mut VecDeque<Class>, us: &mut Ve
     } else if used {
         c_new.terms = Vec::new();
         c_new.terms.push(t0.clone());
-        c_new.terms.push(t1.clone());
+        if !c_new.terms.contains(&t1) {
+            c_new.terms.push(t1.clone());
+        }
         // avoid doublons
         // still weird to me to keep the old constraints ...
-        if !c_new.constraints.contains(&t0.clone()) {
+        if !c_new.constraints.contains(&t0) {
             c_new.constraints.push(t0.clone());
         }
-        if !c_new.constraints.contains(&t1.clone()) {
+        if !c_new.constraints.contains(&t1) {
             c_new.constraints.push(t1.clone());
         }
         if sat(m, &(c_new.constraints)) {

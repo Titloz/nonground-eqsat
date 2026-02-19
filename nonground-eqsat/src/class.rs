@@ -49,7 +49,7 @@ impl Class {
         }
     }
 
-    pub(crate) fn _get_vars(&self) -> HashSet<usize> {
+    pub(crate) fn get_terms_vars(&self) -> HashSet<usize> {
         let mut set = HashSet::new();
         for t in &self.terms {
             let v = t.get_vars();
@@ -58,6 +58,41 @@ impl Class {
             }
         }
         set
+    }
+
+    pub(crate) fn get_constraint_vars(&self) -> HashSet<usize> {
+        let mut set = HashSet::new();
+        for t in &self.constraints {
+            let v = t.get_vars();
+            for x in v {
+                set.insert(x);
+            }
+        }
+        set
+    }
+
+    pub(crate) fn get_vars(&self) -> HashSet<usize> {
+        let mut set = self.get_terms_vars();
+        for x in self.get_constraint_vars() {
+            set.insert(x);
+        }
+        set
+    }
+
+    pub(crate) fn share_vars(&self, other: &Class) -> bool {
+        let self_vars = self.get_vars();
+        let other_vars = other.get_vars();
+        for x in other_vars.clone() {
+            if !self_vars.contains(&x) {
+                return false;
+            }
+        }
+        for x in self_vars {
+            if !other_vars.contains(&x) {
+                return false;
+            }
+        }
+        true
     }
 }
 
