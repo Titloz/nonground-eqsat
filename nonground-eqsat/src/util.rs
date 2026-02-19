@@ -1,24 +1,16 @@
 use std::collections::{HashMap, VecDeque};
 
-// I need substitutions, mgu, unifiable, match?
 use crate::language::Term;
 use crate::class::Class;
 
 pub(crate) type Subst = HashMap<usize,Term>; 
 
-pub(crate) fn print_subst(sigma: Subst) {
+pub(crate) fn _print_subst(sigma: Subst) {
     for (x,t) in sigma {
         print!("({} |-> {})",x,t);
     }
     print!("\n")
 }
-
-/*pub(crate) fn unifiable(t0: &Term, t1: &Term) -> bool {
-    match mgu(&t0, &t1) {
-        None => false,
-        Some(_) => true,
-    }
-}*/
 
 pub(crate) fn mgu(t0: &Term, t1: &Term) -> Option<Subst> {
     // dummy implementation as of now as my terms are linear
@@ -129,16 +121,11 @@ pub(crate) fn apply(sigma: &Subst, t: &Term) -> Term {
     }
 }
 
-pub(crate) fn pop_value(vdq: &mut VecDeque<Class>, c: &Class) { // -> VecDeque<Class>
+pub(crate) fn pop_value(vdq: &mut VecDeque<Class>, c: &Class) { 
     // directly modifies vdq
     let mut vd : VecDeque<Class> = VecDeque::new();
-    // the choice to "mute" b is temporary. I want to try out
-    //let mut b: bool = false;
     for d in vdq.clone() {
-        if d == *c { // && !b, 
-            //b = true;
-            continue;
-        } else {
+        if d != *c {
             vd.push_back(d);
         }
     }
@@ -148,7 +135,6 @@ pub(crate) fn pop_value(vdq: &mut VecDeque<Class>, c: &Class) { // -> VecDeque<C
     for d in vd {
         vdq.push_back(d);
     }
-    //vdq
 }
 
 pub(crate) fn pop_allval(v: &Vec<Term>, t: Term) -> Vec<Term> {
@@ -170,7 +156,6 @@ pub(crate) fn symdiff(v1: Vec<Term>, v2: Vec<Term>) -> Vec<Term> {
 }
 
 pub(crate) fn rename(c: Class, nb_vars: &mut usize) -> Class {
-    print!("rename nb_vars = {}\n", *nb_vars);
     let mut newc = Class::new();
     let mut sigma : Subst = Subst::new();
     for t in c.terms {
@@ -195,6 +180,5 @@ pub(crate) fn rename(c: Class, nb_vars: &mut usize) -> Class {
         }
         newc.constraints.push(apply(&sigma, &t));
     }
-    //print!("at the end of rename, newc = {}\n", newc);
     newc
 }

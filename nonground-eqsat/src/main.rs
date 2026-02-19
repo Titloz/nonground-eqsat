@@ -8,7 +8,7 @@ mod util;
 mod smt;
 
 
-use std::collections::VecDeque; // HashSet, 
+use std::collections::VecDeque; 
 
 use crate::language::{Term, Equality};
 use crate::class::Class;
@@ -43,9 +43,9 @@ fn nongroundcc(e: VecDeque<Equality>, m: &Vec<Term>) {
     let mut cf : Class = Class::new();
     let mut cg : Class = Class::new();
     let mut ch : Class = Class::new();
-    //let mut ca : Class = Class::new();
-    //let mut cb : Class = Class::new();
-    //let mut cc : Class = Class::new();
+    let mut ca : Class = Class::new();
+    let mut cb : Class = Class::new();
+    let mut cc : Class = Class::new();
     cf.terms.push(Term::F(Box::new(Term::Var(nvars)))); 
     cf.constraints.push(Term::F(Box::new(Term::Var(nvars))));
     nvars += 1;
@@ -55,24 +55,19 @@ fn nongroundcc(e: VecDeque<Equality>, m: &Vec<Term>) {
     ch.terms.push(Term::H(Box::new(Term::Var(nvars)))); 
     ch.constraints.push(Term::H(Box::new(Term::Var(nvars))));
     nvars += 1;
-    //ca.terms.push(Term::A);
-    //ca.constraints.push(Term::A);
-    //cb.terms.push(Term::B);
-    //cb.constraints.push(Term::B);
-    //cc.terms.push(Term::C);
-    //cc.constraints.push(Term::C);
+    ca.terms.push(Term::A);
+    ca.constraints.push(Term::A);
+    cb.terms.push(Term::B);
+    cb.constraints.push(Term::B);
+    cc.terms.push(Term::C);
+    cc.constraints.push(Term::C);
     wo.push_back(cf);
     wo.push_back(cg);
     wo.push_back(ch);
-    //wo.push_back(ca);
-    //wo.push_back(cb);
-    //wo.push_back(cc);
+    wo.push_back(ca);
+    wo.push_back(cb);
+    wo.push_back(cc);
 
-    // until main loop : experimental
-    /*let mut wo_set : HashSet<Class> = HashSet::new();
-    for c in wo.clone() {
-        wo_set.insert(c);
-    }*/
     // main loop
     while !us.is_empty() {
         let c : Class = us.pop_front().expect("");
@@ -81,26 +76,10 @@ fn nongroundcc(e: VecDeque<Equality>, m: &Vec<Term>) {
                 if !wo.contains(&c) {
                     wo.push_back(c);
                 }
-                // OR
-                /*if !wo_set.contains(&c){
-                    wo_set.insert(c.clone());
-                    wo.push_back(c);
-                }*/
             }
         } 
     }
-    // to avoid doublons
-    /* 
-    let mut wo_final = Vec::new();
-    let mut wo_hash = HashSet::new();
     for c in wo {
-        if !wo_hash.contains(&c){
-            let _ = wo_hash.insert(c.clone());
-            wo_final.push(c);
-        }
-    }
-    */
-    for c in wo { //_final
         print!("{}", c);
     }
 }

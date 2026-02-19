@@ -26,7 +26,6 @@ impl Class {
     }
 
     pub(crate) fn sepvars(&self) -> HashSet<usize> {
-        //let mut set = HashSet::new();
         if !self.terms.is_empty() {
             let mut set = self.terms[0].get_vars();
             let mut to_delete = Vec::new();

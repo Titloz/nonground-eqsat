@@ -1,20 +1,11 @@
 use std::collections::{HashMap, HashSet};
 
 use crate::language::Term;
-use crate::util::{Subst, apply, matches_all}; //, print_subst
+use crate::util::{Subst, apply, matches_all};
 
 pub(crate) fn sat(m0: &Vec<Term>, gamma: &Vec<Term>) -> bool {
-    print!("sat\n"); //  with gamma = 
-    //for t in gamma.clone() {
-    //    print!("{},", t);
-    //}
-    print!("\n");
+
     fn aux(m: &Vec<Term>, g: &Vec<Term>, l: &mut Vec<Subst>) -> bool {
-        //print!("aux with l=\n");
-        //for s in l.clone() {
-        //    print_subst(s);
-        //}
-        //print!("\n");
         if l.is_empty() {
             false
         } else {
@@ -52,7 +43,7 @@ pub(crate) fn sat(m0: &Vec<Term>, gamma: &Vec<Term>) -> bool {
                 for t in applied {
                     // one must exist
                     if !t.is_ground() {
-                        let deltas = matches_all(&t, m); // todo
+                        let deltas = matches_all(&t, m); 
                         for mut d in deltas {
                             for (k,v) in delta.clone() {
                                 d.insert(k, v);
@@ -77,12 +68,8 @@ pub(crate) fn sat(m0: &Vec<Term>, gamma: &Vec<Term>) -> bool {
 }
 
 pub(crate) fn implication_test(c0 : &Vec<Term>, c1 : &Vec<Term>, m0 : &Vec<Term>) -> bool {
-    print!("implication_test\n");
+
     fn aux(gamma: &Vec<Term>, dstau : &Vec<Term>, l : &mut Vec<Subst>, m : &Vec<Term>) -> bool {
-        //print!("implication_test: l=\n");
-        //for s in l.clone() {
-        //    print_subst(s);
-        //}
         if l.is_empty() {
             true
         } else {
@@ -98,7 +85,6 @@ pub(crate) fn implication_test(c0 : &Vec<Term>, c1 : &Vec<Term>, m0 : &Vec<Term>
             }
             let nb_vars_gamma = vars_gamma.len();
             if dom_delta == nb_vars_gamma {
-                //print!("case dom_delta == nb_vars_gamma\n");
                 let mut dstau_bis : Vec<Term> = Vec::new();
                 for t in dstau.clone() {
                     dstau_bis.push(apply(&delta, &t));
@@ -110,9 +96,8 @@ pub(crate) fn implication_test(c0 : &Vec<Term>, c1 : &Vec<Term>, m0 : &Vec<Term>
                 }
                 aux(gamma, dstau, l, m)
             } else {
-                //print!("case dom_delta != nb_vars_gamma\n");
-                // tj = first_non_ground(gamma), we know for a fact that it exists because of the if branching 
-                let g2 = gamma.clone();// gamma.iter().map(|t| apply(&delta, t));
+                // tj = first_non_ground(gamma), we know for a fact that it exists because dom(delta) != vars(gamma)
+                let g2 = gamma.clone();
                 let mut tj : Term = Term::A;
                 let mut should_break = false;
                 for x in g2 {
@@ -124,14 +109,12 @@ pub(crate) fn implication_test(c0 : &Vec<Term>, c1 : &Vec<Term>, m0 : &Vec<Term>
                         }
                     }
                     if should_break {
-                        //tj = x;
                         break;
                     }
                 }
-                //print!("tj={}\n", tj);
                 let deltas = matches_all(&tj, m);
                 for mut d in deltas {
-                    let mut b : bool = true;
+                    let mut d_is_acceptable : bool = true;
                     // i should modify gamma to know where are the new ground terms
                     // here I want to iterate over every new ground terms
                     // for a first impl, just test for every ground term
@@ -145,11 +128,10 @@ pub(crate) fn implication_test(c0 : &Vec<Term>, c1 : &Vec<Term>, m0 : &Vec<Term>
                     }
                     for t in ground_gamma {
                         if matches_all(&t, m).is_empty() {
-                            b = false;
+                            d_is_acceptable = false;
                         }
                     }
-                    if b {
-                        // those operations might be weird in memory let's see what happens there
+                    if d_is_acceptable {
                         for (k,v) in &delta {
                             d.insert(*k, v.clone());
                         }

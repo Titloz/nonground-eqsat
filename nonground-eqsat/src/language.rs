@@ -1,38 +1,5 @@
-//use egg::Symbol; // Analysis, DidMerge, EGraph, FromOp, Id, Language,  
-//use internment::Intern;
 use std::{collections::HashSet, fmt};
 
-//#[derive(Debug, Clone, Hash, PartialEq, Eq)]
-/*pub(crate) enum Discriminant {
-    S,
-    K,
-    I,
-    User(Symbol),
-    App,
-}*/
-
-
-/*pub(crate) enum Term {
-    S([Id; 1]),
-    K([Id; 1]),
-    I([Id; 1]),
-    User(Symbol, Intern<Type>),
-    App([Id; 2]),
-}
-
-impl fmt::Display for Term {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Term::Type(_) => write!(f, "type"), // write!(f, "{t}"),
-            Term::S(_) => write!(f, "S"),
-            Term::K(_) => write!(f, "K"),
-            Term::I(_) => write!(f, "I"),
-            Term::User(symbol, _) => write!(f, "{symbol}"),
-            Term::App(_) => write!(f, "@"),
-        }
-    }
-}
-    */
 #[derive(Debug, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub(crate) enum Term {
     F(Box<Term>),
