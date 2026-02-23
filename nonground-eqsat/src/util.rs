@@ -1,0 +1,184 @@
+use std::collections::{HashMap, VecDeque};
+
+use crate::language::Term;
+use crate::class::Class;
+
+pub(crate) type Subst = HashMap<usize,Term>; 
+
+pub(crate) fn _print_subst(sigma: Subst) {
+    for (x,t) in sigma {
+        print!("({} |-> {})",x,t);
+    }
+    print!("\n")
+}
+
+pub(crate) fn mgu(t0: &Term, t1: &Term) -> Option<Subst> {
+    // dummy implementation as of now as my terms are linear
+    match matches(t0, t1) {
+        Some(sigma) => Some(sigma),
+        None => matches(t1, t0),
+    }
+}
+
+pub(crate) fn matches(t00: &Term, t11: &Term) -> Option<Subst> {
+    // easy because all my terms are linear here so uninteresting
+    fn matches_aux(t0: &Term, t1: &Term, mut sigma: Subst) -> Option<Subst> {
+        match t0 {
+        Term::F(t) => {
+            match t1 {
+                Term::F(s) => matches(t, s),
+                _ => None,
+            }
+        },
+        Term::G(t) => {
+            match t1 {
+                Term::G(s) => matches(t, s),
+                _ => None,
+            }
+        },
+        Term::H(t) => {
+            match t1 {
+                Term::H(s) => matches(t, s),
+                _ => None,
+            }
+        },
+        Term::A => {
+            match t1 {
+                Term::A => Some(sigma),
+                _ => None,
+            }
+        },
+        Term::B => {
+            match t1 {
+                Term::B => Some(sigma),
+                _ => None,
+            }
+        },
+        Term::C => {
+            match t1 {
+                Term::C => Some(sigma),
+                _ => None,
+            }
+        },
+        Term::Var(x) => {
+            if sigma.contains_key(x) {
+                let v = sigma.get(x)?;
+                if v == t1 {
+                    Some(sigma)
+                } else {
+                    None
+                }
+            } else {
+                sigma.insert(*x, t1.clone());
+                Some(sigma)
+            }
+        }
+    }
+    } 
+    matches_aux(t00, t11, HashMap::new())
+}
+
+pub(crate) fn matches_all(t0: &Term, v: &Vec<Term>) -> Vec<Subst> {
+    let mut new_vec : Vec<Subst> = Vec::new();
+    for t1 in v {
+        match matches(t0, t1) {
+            None => continue,
+            Some(sigma) => {
+                if !new_vec.contains(&sigma) {
+                    new_vec.push(sigma);
+                }
+            },
+        }
+    }
+    new_vec
+} 
+
+
+
+pub(crate) fn apply(sigma: &Subst, t: &Term) -> Term {
+    match t {
+        Term::Var(x) => {
+            match sigma.get(x).cloned() {
+                None => t.clone(),
+                Some(s) => s,
+            }
+        }, 
+        Term::A => Term::A,
+        Term::B => Term::B,
+        Term::C => Term::C,
+        Term::F(s) => {
+            let term = apply(sigma, &*s);
+            Term::F(Box::new(term))
+        },
+        Term::G(s) => {
+            let term = apply(sigma, &*s);
+            Term::G(Box::new(term))
+        },
+        Term::H(s) => {
+            let term = apply(sigma, &*s);
+            Term::H(Box::new(term))
+        },
+    }
+}
+
+pub(crate) fn pop_value(vdq: &mut VecDeque<Class>, c: &Class) { 
+    // directly modifies vdq
+    let mut vd : VecDeque<Class> = VecDeque::new();
+    for d in vdq.clone() {
+        if d != *c {
+            vd.push_back(d);
+        }
+    }
+    while !vdq.is_empty() {
+        vdq.pop_front();
+    }
+    for d in vd {
+        vdq.push_back(d);
+    }
+}
+
+pub(crate) fn pop_allval(v: &Vec<Term>, t: Term) -> Vec<Term> {
+    let mut new_v : Vec<Term> = Vec::new();
+    for x in v {
+        if *x != t {
+            new_v.push(x.clone());
+        }
+    }
+    new_v
+}
+
+pub(crate) fn symdiff(v1: Vec<Term>, v2: Vec<Term>) -> Vec<Term> {
+    let mut new_v : Vec<Term> = v1.clone();
+    for el in v2 {
+        new_v = pop_allval(&new_v, el);
+    }
+    new_v
+}
+
+pub(crate) fn rename(c: Class, nb_vars: &mut usize) -> Class {
+    let mut newc = Class::new();
+    let mut sigma : Subst = Subst::new();
+    for t in c.terms {
+        let vars = t.get_vars();
+        for v in vars {
+            if !sigma.contains_key(&v) {
+                sigma.insert(v, Term::Var(*nb_vars));
+                *nb_vars += 1;
+            }
+        }
+        newc.terms.push(apply(&sigma, &t));
+    }
+    // note : if a variable only appears in the constraints and not in the terms
+    // i might want to delete the constraints. I have to look at the rules again.
+    for t in c.constraints {
+        let vars = t.get_vars();
+        for v in vars {
+            if !sigma.contains_key(&v) {
+                sigma.insert(v, Term::Var(*nb_vars));
+                *nb_vars += 1;
+            }
+        }
+        newc.constraints.push(apply(&sigma, &t));
+    }
+    newc
+}
