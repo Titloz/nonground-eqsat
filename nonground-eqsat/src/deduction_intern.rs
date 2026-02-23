@@ -40,6 +40,7 @@ fn replace_in_term(t0: &Term, s0: &Term) -> Term {
 }
 
 pub(crate) fn deduct_intern(m: &Vec<Term>, wo: &mut VecDeque<Class>, us: &mut VecDeque<Class>, t0: Term, t1: Term, i: usize, n: usize, c0: &Class, c_new: &mut Class, used: bool, nb_vars: &mut usize) -> bool {
+    //print!("deduct_intern\n");
     if i != n {
         for c in wo.clone() {
             let cbis = &c.clone();

@@ -7,6 +7,7 @@ use crate::smt::sat;
 use crate::language::Term;
 
 pub(crate) fn merge(m: &Vec<Term>, wo: &mut VecDeque<Class>, us: &mut VecDeque<Class>, c0: Class, nb_vars: &mut usize) -> bool {
+    //print!("merge\n");
     for c1 in wo.clone() {
         let mut c2 = c1.clone();
         if c1.share_vars(&c0) { 

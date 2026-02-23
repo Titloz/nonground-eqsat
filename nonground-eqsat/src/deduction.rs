@@ -6,6 +6,7 @@ use crate::language::Term;
 use crate::util::pop_value;
 
 pub(crate) fn deduct(m: &Vec<Term>, wo: &mut VecDeque<Class>, us: &mut VecDeque<Class>, c0: Class, nb_vars: &mut usize) -> bool {
+    //print!("deduct\n");
     if !wo.contains(&c0) {
         wo.push_back(c0.clone());
     }

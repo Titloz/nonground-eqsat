@@ -88,16 +88,16 @@ fn nongroundcc(e: VecDeque<Equality>, m: &Vec<Term>) {
 fn main() {
     let mut equalities : VecDeque<Equality> = VecDeque::new(); // get the equalities
     //EXAMPLE 1 : OK
-    /* 
-    let lhs0 : Term = Term::G(Box::new(Term::Var(0)));
+    
+    /* let lhs0 : Term = Term::G(Box::new(Term::Var(0)));
     let rhs0 : Term = Term::H(Box::new(Term::Var(0)));
     let eq0 : Equality = Equality {lhs: lhs0, rhs: rhs0};
     let lhs1 : Term = Term::H(Box::new(Term::H(Box::new(Term::Var(1)))));
     let rhs1 : Term = Term::F(Box::new(Term::H(Box::new(Term::Var(1)))));
     let eq1 = Equality {lhs: lhs1, rhs: rhs1};
     equalities.push_back(eq0);
-    equalities.push_back(eq1);
-    */
+    equalities.push_back(eq1); */
+   
     // EXAMPLE 2 : OK -> their presentation of the class is actually not minimal!
     
     let lhs0 = Term::G(Box::new(Term::Var(0)));
@@ -109,16 +109,20 @@ fn main() {
     let lhs2 = Term::G(Box::new(Term::H(Box::new(Term::Var(2)))));
     let rhs2 = Term::H(Box::new(Term::H(Box::new(Term::Var(2)))));
     let eq2 = Equality {lhs: lhs2, rhs: rhs2};
-    // the next equality is simply to not see the "f", it will behave as an other "g"
+    // the next equalities are simply to not see the "f", it will behave as an other "g"
     let lhs3 = Term::F(Box::new(Term::Var(3)));
-    let rhs3 = Term::G(Box::new(Term::Var(3)));
+    let rhs3 = Term::A;
     let eq3 = Equality {lhs: lhs3, rhs: rhs3};
-    equalities.push_back(eq0);
-    equalities.push_back(eq1);
+    let lhs4 = Term::F(Box::new(Term::H(Box::new(Term::Var(4)))));
+    let rhs4 = Term::H(Box::new(Term::H(Box::new(Term::Var(4)))));
+    let eq4 = Equality { lhs: lhs4, rhs: rhs4 };
     equalities.push_back(eq2);
+    equalities.push_back(eq1);
     equalities.push_back(eq3);
+    equalities.push_back(eq0);
+    equalities.push_back(eq4);
     //EXAMPLE 3 : OK
-    /*let lhs0 = Term::F(Box::new(Term::Var(0)));
+    /* let lhs0 = Term::F(Box::new(Term::Var(0)));
     let rhs0 = Term::G(Box::new(Term::Var(0)));
     let eq0 = Equality {lhs: lhs0, rhs:rhs0};
     equalities.push_back(eq0);
@@ -152,8 +156,8 @@ fn main() {
     equalities.push_back(eq3);
     equalities.push_back(eq4);
     equalities.push_back(eq5);
-    equalities.push_back(eq6);
-    */
+    equalities.push_back(eq6); */
+   
     let mut m : Vec<Term> = Vec::new(); // get the ground terms
 
     //EXAMPLE 1
